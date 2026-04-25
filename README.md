@@ -1,64 +1,111 @@
 # pipeline-sentinel
 
-A Python framework that automates ELT pipeline data quality validation.
+A Python framework for ELT pipeline data quality validation.
 
-## What it does
+## Overview
 
-| Check | Description |
-|-------|-------------|
-| S3 Path Validation | Confirms inbound files exist, are non-empty, and arrived on time |
-| Count Reconciliation | Compares source vs target row counts and flags any delta |
-| Anomaly Detection | Detects statistical outliers in numeric columns using IQR |
-| Lock Detection | Flags files stuck in inbound path past the expected window |
+`pipeline-sentinel` is a lightweight data quality framework built to simulate real-world validation checks used in ELT and batch data pipelines. It helps detect common operational and data quality issues before bad data moves further downstream.
 
-## Tech Stack
+This project includes modular validation components, automated test coverage, sample data generation, and a GitHub Actions workflow for continuous integration.
 
-- Python 3.x
+## Features
+
+- Validate whether expected input files are present and readable
+- Reconcile row counts between expected and actual datasets
+- Detect anomalies such as null-heavy or suspicious records
+- Check lock conditions to prevent duplicate or unsafe pipeline runs
+- Generate alert-style reporting for failed validation checks
+- Run automated tests with `pytest`
+- Execute CI checks automatically with GitHub Actions
+
+## Tech stack
+
+- Python 3.10
 - pandas
 - NumPy
 - pytest
+- GitHub Actions
 
-## Project Structure
+## Project structure
 
-```
+```text
 pipeline-sentinel/
-|-- .github/workflows/
-|   |-- python-app.yml
-|-- data/
-|   |-- orders_source.csv
-|   |-- orders_target.csv
-|-- src/
-|   |-- __init__.py
-|   |-- s3_validator.py
-|   |-- count_reconciler.py
-|   |-- anomaly_detector.py
-|   |-- lock_checker.py
-|   |-- alert_reporter.py
-|-- tests/
-|   |-- __init__.py
-|   |-- test_count_reconciler.py
-|-- .gitignore
-|-- config.yaml
-|-- createsampledata.py
-|-- requirements.txt
-|-- run_pipeline.py
+├── .github/
+│   └── workflows/
+│       └── python-app.yml
+├── data/
+├── output/
+├── src/
+│   ├── __init__.py
+│   ├── alert_reporter.py
+│   ├── anomaly_detector.py
+│   ├── count_reconciler.py
+│   ├── lock_checker.py
+│   └── s3_validator.py
+├── tests/
+│   ├── __init__.py
+│   └── test_count_reconciler.py
+├── .gitignore
+├── config.yaml
+├── createsampledata.py
+├── README.md
+├── requirements.txt
+└── run_pipeline.py
+```
+
+## Setup
+
+Clone the repository and install dependencies:
+
+```bash
+git clone https://github.com/anthonyvijayraj21-blip/pipeline-sentinel.git
+cd pipeline-sentinel
+pip install -r requirements.txt
 ```
 
 ## How to run
 
+### 1. Generate sample data
+
 ```bash
-pip install -r requirements.txt
 python createsampledata.py
+```
+
+### 2. Run the pipeline checks
+
+```bash
 python run_pipeline.py
+```
+
+### 3. Run tests
+
+```bash
 pytest tests/ -v
 ```
 
+## Validation modules
+
+### `s3_validator.py`
+Validates whether the expected input file exists and can be accessed.
+
+### `count_reconciler.py`
+Checks row-count mismatches between expected and actual datasets.
+
+### `anomaly_detector.py`
+Detects data quality issues such as unexpected null patterns or anomalies.
+
+### `lock_checker.py`
+Prevents unsafe execution by checking whether a lock condition already exists.
+
+### `alert_reporter.py`
+Builds a simple alert/report output based on validation results.
+
 ## Sample output
 
-```
+```text
 --------------------------------------------
 PIPELINE SENTINEL - DATA QUALITY REPORT
-Run time 2025-04-25 14:32:01
+Run time: 2025-04-25 14:32:01
 --------------------------------------------
 
 ---- CHECK 1: S3 Path Validation ----
@@ -92,10 +139,30 @@ OVERALL PIPELINE STATUS: FAIL
 --------------------------------------------
 ```
 
-## Background
+## Testing
 
-Built from hands-on experience working on enterprise healthcare data pipelines. This project automates the validation checks that are typically done manually in ops-heavy pipelines, turning reactive support into proactive engineering.
+This project includes unit testing with `pytest`.
+
+Run the test suite with:
+
+```bash
+pytest tests/ -v
+```
 
 ## CI/CD
 
-This project uses GitHub Actions for continuous integration. Every push and pull request to `main` automatically runs the test suite with `pytest` on Python 3.10.
+GitHub Actions is configured through `.github/workflows/python-app.yml`. Every push and pull request to `main` runs the automated test workflow on Python 3.10. [page:16]
+
+## Why this project matters
+
+This project reflects common data engineering and pipeline support tasks found in production environments, including validation, reconciliation, anomaly detection, and operational safeguards.
+
+It is designed as a practical portfolio project to demonstrate modular Python development, testability, and CI integration for data engineering workflows.
+
+## Future improvements
+
+- Add logging instead of print-based output
+- Add support for configurable thresholds by dataset
+- Extend tests for all modules
+- Export validation results to CSV or HTML
+- Add Docker support for reproducible execution
