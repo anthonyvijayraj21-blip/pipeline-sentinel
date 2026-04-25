@@ -1,0 +1,6 @@
+project_name: pipeline-sentinel
+raw_data_path: data/olist_orders_dataset.csv
+alerts_output_path: output/alerts_report.csv
+expected_min_rows: 100
+anomaly_threshold_pct: 30
+lock_file: pipeline.lock
